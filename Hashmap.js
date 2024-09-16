@@ -160,7 +160,7 @@
         
         if(this.buckets[i].key == key && this.buckets[i].nextNode == null)
         {
-          this.buckets[i] = null
+          delete this.buckets[i]
           return true
         }else if(this.buckets[i].key == key && this.buckets[i].nextNode != null)
         {
@@ -226,4 +226,5 @@ console.log(test.get('hat'))
 console.log(test.has('hat'))
 console.log(test.has('ht'))
 console.log(test.remove('hat'))
+console.log(test.remove('grape'))
 console.log(test)
