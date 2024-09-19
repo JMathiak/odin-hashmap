@@ -22,7 +22,7 @@
     constructor(lf, capacity){
         this.loadFactor = lf;
         this.capacity = capacity;
-        this.buckets = new Array(capacity);
+        this.buckets = null;
 
     } 
 
@@ -39,6 +39,11 @@
     } 
 
     set(key, value){
+
+      if(this.buckets == null)
+      {
+        this.buckets = new Array(this.capacity)
+      }
       let bucketNo = this.hash(key)
       let pair = new Node();
       pair.key = key
@@ -76,9 +81,24 @@
         this.buckets[bucketNo] = pair
        }
 
+       if(this.length() > this.capacity * this.loadFactor)
+       {
+        this.growth()
+       }
+
       //this.bucket[bucketNo] -> is a node
       // 
       
+    }
+
+    growth(){
+      this.capacity = this.capacity * 2;
+      let entries = this.entries()
+      this.clear();
+      for(let i = 0; i < entries.length; i++)
+      {
+        this.set(entries[i][0], entries[i][1])
+      }
     }
 
     get(key)
@@ -195,7 +215,99 @@
       return false
     }
 
+    length(){
+      let length = 0; 
+      for(let i = 0; i < this.buckets.length; i++)
+      {
+        if(this.buckets[i] != null)
+        {
+          length++;
+          if(this.buckets[i].nextNode != null){
+            let currNode = this.buckets[i].nextNode
+            length++
+            while(currNode.nextNode != null)
+            {
+              currNode = currNode.nextNode
+              length++;
+            }
+          }
+        }
+      }
+      return length;
+    }
+    clear(){
+      for(let i = 0; i< this.buckets.length; i++){
+        if(this.buckets[i] != null)
+        {
+          delete this.buckets[i]
+        }
+    }
   }
+
+  keys(){
+    let keys = []
+    for(let i = 0; i < this.buckets.length; i++)
+      {
+        if(this.buckets[i] != null)
+        {
+          keys.push(this.buckets[i].key)
+          if(this.buckets[i].nextNode != null){
+            let currNode = this.buckets[i].nextNode
+            keys.push(currNode.key)
+            while(currNode.nextNode != null)
+            {
+              keys.push(currNode.key)
+              currNode = currNode.nextNode
+            }
+          }
+        }
+      }
+      return keys;
+  }
+
+
+  values(){
+    let values = []
+    for(let i = 0; i < this.buckets.length; i++)
+      {
+        if(this.buckets[i] != null)
+        {
+          values.push(this.buckets[i].value)
+          if(this.buckets[i].nextNode != null){
+            let currNode = this.buckets[i].nextNode
+            values.push(currNode.value)
+            while(currNode.nextNode != null)
+            {
+              values.push(currNode.value)
+              currNode = currNode.nextNode
+            }
+          }
+        }
+      }
+      return values;
+  }
+
+  entries(){
+    let entries = []
+    for(let i = 0; i < this.buckets.length; i++)
+      {
+        if(this.buckets[i] != null)
+        {
+          entries.push([this.buckets[i].key ,this.buckets[i].value])
+          if(this.buckets[i].nextNode != null){
+            let currNode = this.buckets[i].nextNode
+            entries.push([currNode.key ,currNode.value])
+            while(currNode.nextNode != null)
+            {
+              entries.push([currNode.key ,currNode.value])
+              currNode = currNode.nextNode
+            }
+          }
+        }
+      }
+      return entries;
+  }
+}
 
 let hm = new HashMap(.75, 16)
 hm.set('Apple', 'Red')
@@ -213,8 +325,8 @@ test.set('apple', 'red')
 test.set('banana', 'yellow')
 test.set('carrot', 'orange')
 test.set('dog', 'brown')
-test.set('elephant', 'gray')
 test.set('frog', 'green')
+test.set('elephant', 'gray')
 test.set('grape', 'purple')
 test.set('hat', 'black')
 test.set('ice cream', 'white')
@@ -225,6 +337,25 @@ console.log(test)
 console.log(test.get('hat'))
 console.log(test.has('hat'))
 console.log(test.has('ht'))
-console.log(test.remove('hat'))
-console.log(test.remove('grape'))
+console.log(test.length())
+console.log(test.keys())
+console.log(test.values())
+console.log(test.entries())
+test.set('moon', 'silver')
 console.log(test)
+console.log(test.entries())
+
+/*
+if capacity * lf < entries
+growth function
+{
+capacity = capacity * 2
+let entries = this.entries()
+for(entries iterator)
+{
+set(entries[i][0], entries[i][1])
+}
+}
+
+
+*/
